@@ -8,4 +8,7 @@ find_package(HPX REQUIRED)
 
 add_executable(hello_world main.cpp)
 
-target_link_libraries(hello_world HPX::hpx HPX::wrap_main HPX::iostreams_component)
+
+
+# specify necessary lib for a target
+target_link_libraries(hello_world HPX::hpx HPX::wrap_main HPX::iostreams_component HPX::partitioned_vector_component)
