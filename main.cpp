@@ -2,52 +2,54 @@
 // to use the plain C-main below as the direct main HPX entry point.
 
 #include <vector>
-
-#include <hpx/hpx_main.hpp>
-#include <hpx/iostream.hpp>
-#include <hpx/include/partitioned_vector.hpp>
+#include <iostream>
+#include <cassert>
+#include <string>
 
 // The following code generates all necessary boiler plate to enable the
 // remote creation of 'partitioned_vector' segments
 
-HPX_REGISTER_PARTITIONED_VECTOR(double);
+using namespace std;
+
+template <typename T, typename U, typename Multiplier, typename Result,
+          typename Accumulater>
+Result inner_product(std::vector<T> &a, std::vector<U> &b, Multiplier op,
+                   Accumulater unairy, Result init) {
+    // 2 operand of inner product must have the same size
+    assert(a.size() == b.size());
+
+    size_t count = a.size();
+
+    for (size_t i = 0; i < count; i++) {
+        init = unairy(init, op(a[i], b[i]));
+    }
+    return init;
+}
+
+
+string str_multiplication(string s, size_t n){
+    if (n == 0){
+        return "";
+    }
+
+    for (size_t i = 1; i < n; i++)
+    {
+        s += s;
+    }
+
+    return s;
+}
+
 
 
 int main() {
 
-    // Let's launch another task.
-    hpx::future<double> g = hpx::async([]() { return 3.14; });
+    vector<string> v1{"Hello", "World"};
+    vector<int> v2{2, 2};
+    
+    string res = inner_product(v1, v2, str_multiplication,
+     [](string a, string b){return a + b;}, string{""});
 
-    // Tasks can be chained using the then method. The continuation takes the
-    // future as an argument.
-    hpx::future<double> result = g.then([](hpx::future<double>&& gg) {
-        // This function will be called once g is ready. gg is g moved
-        // into the continuation.
-        hpx::cout << "Hello" << gg.get();
-        return gg.get() * 42.0 * 42.0;
-    });
-
-    result.then([](hpx::future<double>&& gg) {
-        // This function will be called once g is ready. gg is g moved
-        // into the continuation.
-        hpx::cout << "Hello world" << hpx::endl;
-        return gg.get() * 42.0 * 42.0;
-    });
-
-    hpx::future<void> f = hpx::async(
-        [](){hpx::cout << "Hello"; }
-    );
-
-    f.then([](hpx::future<void> && x) {
-        // This function will be called once g is ready. gg is g moved
-        // into the continuation.
-        hpx::cout << "world" << hpx::endl;
-        return ;
-    });
-
-    hpx::partitioned_vector<double> v1{50, 1};
-    v1[0] = 1;
-
-    hpx::cout << v1[0] << hpx::endl;
-
+    std::cout << res << std::endl;
+    
 }
