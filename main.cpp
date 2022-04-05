@@ -5,23 +5,24 @@
 #include <iostream>
 #include <cassert>
 #include <string>
-
-// The following code generates all necessary boiler plate to enable the
-// remote creation of 'partitioned_vector' segments
+#include <stdexcept>
 
 using namespace std;
 
 template <typename T, typename U, typename Multiplier, typename Result,
           typename Accumulater>
 Result inner_product(std::vector<T> &a, std::vector<U> &b, Multiplier op,
-                   Accumulater unairy, Result init) {
+                   Accumulater accum, Result init) {
+
     // 2 operand of inner product must have the same size
-    assert(a.size() == b.size());
+    if (a.size() != b.size()){
+        throw std::invalid_argument("Two vectors must have the same size !");
+    }
 
     size_t count = a.size();
 
     for (size_t i = 0; i < count; i++) {
-        init = unairy(init, op(a[i], b[i]));
+        init = accum(init, op(a[i], b[i]));
     }
     return init;
 }
