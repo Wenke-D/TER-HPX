@@ -7,6 +7,7 @@ namespace vector_inner_product {
 
 using namespace std;
 
+
 template <typename T, typename U, typename Multiplier, typename Result,
           typename Accumulater>
 Result inner_product(vector<T> &a, vector<U> &b, Multiplier op,

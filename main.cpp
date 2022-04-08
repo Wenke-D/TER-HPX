@@ -11,6 +11,7 @@
 
 #include "remote_function.cpp"
 #include "vector_inner_product.cpp"
+#include "try_partitioned_vector.cpp"
 
 
 
@@ -23,5 +24,7 @@ int main() {
 
     // test calling a remote function
     remote_function::test();
+
+    try_partitioned_vector::test();
 
 }
